@@ -63,7 +63,6 @@ export const ImageZoom = ({ image }) => {
       }}
     >
       <Pin delta={delta} scale={scale} />
-      <Pin delta={delta} scale={scale} />
 
       <div
         ref={imageRef}

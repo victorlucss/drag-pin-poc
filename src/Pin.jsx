@@ -1,9 +1,18 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useEffect, useRef, useState } from "react";
 
 const Pin = ({ delta, scale }) => {
+  const oldScale = useRef(1);
+  const oldPosition = useRef({});
+  const [isGrowing, setIsGrowing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const pinRef = useRef(null);
+
+  useEffect(() => {
+    console.log(scale, oldScale.current, oldScale.current >= scale);
+    setIsGrowing(oldScale.current > scale);
+    oldScale.current = scale;
+  }, [scale]);
 
   useEffect(() => {
     const image = pinRef.current;
@@ -44,16 +53,7 @@ const Pin = ({ delta, scale }) => {
     };
   }, [pinRef]);
 
-  const correctScale = useCallback(() => {
-    console.log(scale);
-    setPosition((position) => ({
-      x: position.x * 1 - scale,
-      y: position.y * 1 - scale,
-    }));
-  }, [scale]);
-
   const correctPosition = useCallback(() => {
-    console.log(scale);
     setPosition((position) => ({
       x: position.x + delta.x * scale,
       y: position.y + delta.y * scale,
@@ -65,28 +65,26 @@ const Pin = ({ delta, scale }) => {
   }, [delta, correctPosition]);
 
   useEffect(() => {
-    // correctScale();
-  }, [correctScale, scale]);
+    console.log("fui chamado");
+    setPosition((position) => ({
+      x: oldPosition.current.x * scale,
+      y: oldPosition.current.y * scale,
+    }));
+  }, [scale]);
 
-  console.log(position);
+  useEffect(() => {
+    oldPosition.current = position;
+  }, [position]);
 
-  console.log(pinRef && pinRef.current && pinRef.current.left, position.x);
   return (
     <div
       style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "50px",
-        height: "50px",
-        background: "red",
         transform: `translate(${position.x}px, ${position.y}px)`,
-        cursor: "grab",
-        zIndex: 9,
       }}
+      className="tooltip"
       ref={pinRef}
     >
-      qualquer coisa
+      something
     </div>
   );
 };
